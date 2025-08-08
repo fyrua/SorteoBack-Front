@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SorteoBackend.Models.DTOs;
-using SorteoBackend.Services;
+using SorteoBackend.Service;
+using SorteoBackend.Data;
+using SorteoBackend.Models.Entities;
 
 namespace SorteoBackend.Controllers
 {
@@ -9,21 +11,32 @@ namespace SorteoBackend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private readonly ApplicationDbContext _context;
 
-        public AuthController(AuthService authService)
+        public AuthController(AuthService authService, IJwtTokenGenerator jwtTokenGenerator, ApplicationDbContext context)
         {
             _authService = authService;
+            _jwtTokenGenerator = jwtTokenGenerator;
+            _context = context;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public IActionResult Login([FromBody] LoginRequest request)
         {
-            var isValid = await _authService.ValidateLoginAsync(loginRequest);
-            if (!isValid)
-                return Unauthorized(new { message = "Credenciales inválidas" });
+            if (request == null || string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
+            {
+                return BadRequest("Username and password are required");
+            }
 
-            // Aquí podrías generar un token si decides implementar JWT
-            return Ok(new { message = "Inicio de sesión exitoso" });
+            var admin = _context.Admins.FirstOrDefault(a => a.Username == request.Username);
+            if (admin == null || !BCrypt.Net.BCrypt.Verify(request.Password, admin.PasswordHash))
+                return Unauthorized("Credenciales incorrectas");
+
+            var token = _jwtTokenGenerator.GenerateToken(admin.Id.ToString(), admin.Username);
+
+            return Ok(new { token });
         }
+
     }
 }

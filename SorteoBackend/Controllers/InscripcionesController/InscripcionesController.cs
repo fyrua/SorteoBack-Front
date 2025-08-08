@@ -6,6 +6,9 @@ using SorteoBackend.Service;
 
 namespace SorteoBackend.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class InscripcionController : ControllerBase

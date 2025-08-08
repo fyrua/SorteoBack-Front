@@ -189,6 +189,7 @@ C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Azure.Core.dll
 C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Azure.Identity.dll
 C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Humanizer.dll
+C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Microsoft.Build.Locator.dll
 C:\dev\SorteoBack-Front\SorteoBackend\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
