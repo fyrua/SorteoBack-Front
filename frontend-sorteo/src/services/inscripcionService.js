@@ -16,7 +16,7 @@ export const inscripcionService = {
 
   async obtenerInscripciones() {
     try {
-      const response = await api.get('/admin/inscripciones')
+      const response = await api.get('/inscripciones') // 👈 corregido
       return response.data
     } catch (error) {
       throw new Error('Error al obtener inscripciones')
@@ -25,7 +25,7 @@ export const inscripcionService = {
 
   async obtenerInscripcion(id) {
     try {
-      const response = await api.get(`/admin/inscripciones/${id}`)
+      const response = await api.get(`/inscripciones/${id}`) // 👈 corregido
       return response.data
     } catch (error) {
       throw new Error('Error al obtener inscripción')
@@ -34,10 +34,7 @@ export const inscripcionService = {
 
   async actualizarEstado(id, estado, motivo = '') {
     try {
-      const response = await api.put(`/inscripciones/${id}/estado`, {
-        estado,
-        motivo
-      })
+      const response = await api.put(`/inscripciones/${id}/estado`, estado) // 👈 corregido
       return response.data
     } catch (error) {
       throw new Error('Error al actualizar estado')

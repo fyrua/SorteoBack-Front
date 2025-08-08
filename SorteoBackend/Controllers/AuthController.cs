@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using SorteoBackend.Models.DTOs;
 using SorteoBackend.Service;
 using SorteoBackend.Data;
@@ -38,5 +39,11 @@ namespace SorteoBackend.Controllers
             return Ok(new { token });
         }
 
+        [HttpGet("verify")]
+        [Authorize]
+        public IActionResult Verify()
+        {
+            return Ok(new { valid = true });
+        }
     }
 }

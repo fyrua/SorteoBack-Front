@@ -38,7 +38,7 @@ const FormularioInscripcion = () => {
       }
 
       setSelectedFile(file)
-      setValue('archivo', file)
+      setValue('documento', file)
       
       // Crear preview si es imagen
       if (file.type.startsWith('image/')) {
@@ -57,16 +57,18 @@ const FormularioInscripcion = () => {
     try {
       const formData = new FormData()
       
-      // Agregar todos los campos
-      Object.keys(data).forEach(key => {
-        if (key !== 'archivo') {
-          formData.append(key, data[key])
-        }
-      })
+      // Mapear campos del frontend al backend
+      formData.append('nombres', data.nombres)
+      formData.append('apellidos', data.apellidos)
+      formData.append('correo', data.email)
+      formData.append('fechaNacimiento', data.fechaNacimiento)
+      formData.append('direccion', data.direccion)
+      formData.append('telefono', data.telefono)
+      formData.append('numeroDocumento', data.numeroDocumento)
       
       // Agregar archivo
       if (selectedFile) {
-        formData.append('archivo', selectedFile)
+        formData.append('documento', selectedFile)
       }
 
       await inscripcionService.crearInscripcion(formData)

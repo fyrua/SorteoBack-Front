@@ -8,9 +8,8 @@ namespace SorteoBackend.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
 
-    [Authorize(Roles = "Admin")]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/inscripciones")]
     public class InscripcionController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -43,53 +42,53 @@ namespace SorteoBackend.Controllers
 
         // POST: api/Inscripcion
        [HttpPost]
-public async Task<IActionResult> CreateInscripcion([FromForm] InscripcionDto inscripcionDto)
-{
-    // Validar mayoría de edad
-    var edad = DateTime.Today.Year - inscripcionDto.FechaNacimiento.Year;
-    if (inscripcionDto.FechaNacimiento.Date > DateTime.Today.AddYears(-edad)) edad--;
+        public async Task<IActionResult> CreateInscripcion([FromForm] InscripcionDto inscripcionDto)
+        {
+            // Validar mayoría de edad
+            var edad = DateTime.Today.Year - inscripcionDto.FechaNacimiento.Year;
+            if (inscripcionDto.FechaNacimiento.Date > DateTime.Today.AddYears(-edad)) edad--;
 
-    if (edad < 18)
-    {
-        return BadRequest("El participante debe ser mayor de edad.");
-    }
+            if (edad < 18)
+            {
+                return BadRequest("El participante debe ser mayor de edad.");
+            }
 
-    // Validar archivo
-    if (inscripcionDto.Documento == null || inscripcionDto.Documento.Length == 0)
-    {
-        return BadRequest("Debe subir un documento válido.");
-    }
+            // Validar archivo
+            if (inscripcionDto.Documento == null || inscripcionDto.Documento.Length == 0)
+            {
+                return BadRequest("Debe subir un documento válido.");
+            }
 
-    // Guardar archivo en carpeta local
-    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Documentos");
-    Directory.CreateDirectory(uploadsFolder);
+            // Guardar archivo en carpeta local
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Documentos");
+            Directory.CreateDirectory(uploadsFolder);
 
-    var fileName = $"{Guid.NewGuid()}_{inscripcionDto.Documento.FileName}";
-    var filePath = Path.Combine(uploadsFolder, fileName);
+            var fileName = $"{Guid.NewGuid()}_{inscripcionDto.Documento.FileName}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
 
-    using (var stream = new FileStream(filePath, FileMode.Create))
-    {
-        await inscripcionDto.Documento.CopyToAsync(stream);
-    }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await inscripcionDto.Documento.CopyToAsync(stream);
+            }
 
-    // Crear entidad
-    var inscripcion = new Inscripcion
-    {
-        Nombres = inscripcionDto.Nombres,
-        Apellidos = inscripcionDto.Apellidos,
-        Correo = inscripcionDto.Correo,
-        FechaNacimiento = inscripcionDto.FechaNacimiento,
-        Direccion = inscripcionDto.Direccion,
-        Telefono = inscripcionDto.Telefono,
-        NumeroDocumento = inscripcionDto.NumeroDocumento,
-        DocumentoPath = filePath
-    };
+            // Crear entidad
+            var inscripcion = new Inscripcion
+            {
+                Nombres = inscripcionDto.Nombres,
+                Apellidos = inscripcionDto.Apellidos,
+                Correo = inscripcionDto.Correo,
+                FechaNacimiento = inscripcionDto.FechaNacimiento,
+                Direccion = inscripcionDto.Direccion,
+                Telefono = inscripcionDto.Telefono,
+                NumeroDocumento = inscripcionDto.NumeroDocumento,
+                DocumentoPath = filePath
+            };
 
-    _context.Inscripciones.Add(inscripcion);
-    await _context.SaveChangesAsync();
+            _context.Inscripciones.Add(inscripcion);
+            await _context.SaveChangesAsync();
 
-    return Ok(inscripcion);
-}
+            return Ok(inscripcion);
+        }
 
         // PUT: api/Inscripcion/{id}
         [HttpPut("{id}")]

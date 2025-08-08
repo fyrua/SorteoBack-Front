@@ -10,7 +10,6 @@ WORKDIR /src
 
 # Copiar archivos de proyecto
 COPY ["SorteoBackend.csproj", "."]
-COPY ["SorteoBackend.csproj.user", "."]
 COPY ["SorteoBackend.sln", "."]
 
 # Restaurar dependencias

@@ -1,57 +1,41 @@
 version: '3.8'
 
 services:
-  # Servicio de base de datos SQL Server
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sorteo-sqlserver
-    environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: SorteoSYC2024!
-      MSSQL_PID: Express
-    ports:
-      - "1433:1433"
-    volumes:
-      - sqlserver_data:/var/opt/mssql
-    networks:
-      - sorteo-network
-
-  # Servicio backend
   backend:
-    build:
+    build: 
       context: ./SorteoBackend
       dockerfile: Dockerfile
-    container_name: sorteo-backend
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "5224:5224"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=SorteoSYC;User=sa;Password=SorteoSYC2024!;TrustServerCertificate=true
-    depends_on:
-      - sqlserver
+      - ASPNETCORE_URLS=http://+:5224
     volumes:
-      - ./SorteoBackend/appsettings.json:/app/appsettings.json
-    networks:
-      - sorteo-network
+      - ./SorteoBackend:/app
+      - ./SorteoBackend/Documentos:/app/Documentos
+    depends_on:
+      - db
 
-  # Servicio frontend
   frontend:
     build:
       context: ./frontend-sorteo
       dockerfile: Dockerfile
-    container_name: sorteo-frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
-    networks:
-      - sorteo-network
+    environment:
+      - VITE_API_URL=http://localhost:5224/api
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
 
 volumes:
-  sqlserver_data:
-
-networks:
-  sorteo-network:
-    driver: bridge
+  sql_data:
