@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SorteoBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+16c35692b5eafbc261f9789712a91525bc34ec4c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d90af6e02d68a568567b48646fed0e223eb79d00")]
 [assembly: System.Reflection.AssemblyProductAttribute("SorteoBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SorteoBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

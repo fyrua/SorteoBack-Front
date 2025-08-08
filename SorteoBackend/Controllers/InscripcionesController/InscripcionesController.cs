@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SorteoBackend.Data;
 using SorteoBackend.Models.Entities;
+using SorteoBackend.Models.Entities.DTOs;
+using System.Linq;
 using SorteoBackend.Service; 
 
 namespace SorteoBackend.Controllers
@@ -26,7 +28,23 @@ namespace SorteoBackend.Controllers
         public async Task<IActionResult> GetAll()
         {
             var inscripciones = await _context.Inscripciones.ToListAsync();
-            return Ok(inscripciones);
+            var inscripcionesDto = inscripciones.Select(i => new InscripcionDto
+            {
+                Id = i.Id,
+                Nombres = i.Nombres,
+                Apellidos = i.Apellidos,
+                Correo = i.Correo,
+                FechaNacimiento = i.FechaNacimiento,
+                Direccion = i.Direccion,
+                Telefono = i.Telefono,
+                TipoDocumento = i.TipoDocumento,
+                NumeroDocumento = i.NumeroDocumento,
+                RutaArchivo = i.DocumentoPath,
+                Estado = i.Estado,
+                FechaInscripcion = i.FechaInscripcion
+            }).ToList();
+
+            return Ok(inscripcionesDto);
         }
 
         // GET: api/Inscripcion/{id}
@@ -37,7 +55,23 @@ namespace SorteoBackend.Controllers
             if (inscripcion == null)
                 return NotFound();
 
-            return Ok(inscripcion);
+            var inscripcionDto = new InscripcionDto
+            {
+                Id = inscripcion.Id,
+                Nombres = inscripcion.Nombres,
+                Apellidos = inscripcion.Apellidos,
+                Correo = inscripcion.Correo,
+                FechaNacimiento = inscripcion.FechaNacimiento,
+                Direccion = inscripcion.Direccion,
+                Telefono = inscripcion.Telefono,
+                TipoDocumento = inscripcion.TipoDocumento,
+                NumeroDocumento = inscripcion.NumeroDocumento,
+                RutaArchivo = inscripcion.DocumentoPath,
+                Estado = inscripcion.Estado,
+                FechaInscripcion = inscripcion.FechaInscripcion
+            };
+
+            return Ok(inscripcionDto);
         }
 
         // POST: api/Inscripcion

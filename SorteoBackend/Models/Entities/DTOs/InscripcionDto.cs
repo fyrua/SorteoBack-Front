@@ -1,27 +1,26 @@
 using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-public class InscripcionDto
+namespace SorteoBackend.Models.Entities.DTOs
 {
-    [Required]
-    public required string Nombres { get; set; }
+    public class InscripcionDto
+    {
+        public int Id { get; set; }
+        public string Nombres { get; set; } = string.Empty;
+        public string Apellidos { get; set; } = string.Empty;
+        [JsonPropertyName("email")]
+        public string Correo { get; set; } = string.Empty;
 
-    [Required]
-    public required string Apellidos { get; set; }
+        [JsonPropertyName("tipoDocumento")]
+        public string TipoDocumento { get; set; } = string.Empty;
 
-    [Required]
-    [EmailAddress]
-    public required string Correo { get; set; }
-
-    [Required]
-    public DateTime FechaNacimiento { get; set; }
-
-    public string Direccion { get; set; } = string.Empty;
-
-    public string Telefono { get; set; } = string.Empty;
-
-    public string NumeroDocumento { get; set; } = string.Empty;
-
-    [Required]
-    public required IFormFile Documento { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public string Direccion { get; set; } = string.Empty;
+        public string Telefono { get; set; } = string.Empty;
+        public string NumeroDocumento { get; set; } = string.Empty;
+        public string RutaArchivo { get; set; } = string.Empty;
+        public string Estado { get; set; } = "Pendiente";
+        public DateTime FechaInscripcion { get; set; }
+        public IFormFile? Documento { get; set; }
+    }
 }
