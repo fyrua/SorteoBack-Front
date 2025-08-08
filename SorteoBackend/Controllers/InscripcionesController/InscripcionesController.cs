@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SorteoBackend.Data;
 using SorteoBackend.Models.Entities;
+using SorteoBackend.Service; 
 
 namespace SorteoBackend.Controllers
 {
@@ -10,10 +11,12 @@ namespace SorteoBackend.Controllers
     public class InscripcionController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public InscripcionController(ApplicationDbContext context)
+        public InscripcionController(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // GET: api/Inscripcion
@@ -110,7 +113,7 @@ public async Task<IActionResult> CreateInscripcion([FromForm] InscripcionDto ins
         }
 
         // PUT: api/Inscripcion/{id}/estado
-        [HttpPut("{id}/estado")]
+       [HttpPut("{id}/estado")]
         public async Task<IActionResult> CambiarEstado(int id, [FromBody] string nuevoEstado)
         {
             var inscripcion = await _context.Inscripciones.FindAsync(id);
@@ -120,10 +123,15 @@ public async Task<IActionResult> CreateInscripcion([FromForm] InscripcionDto ins
             if (nuevoEstado != "Aceptada" && nuevoEstado != "Rechazada")
                 return BadRequest("Estado inválido.");
 
-            inscripcion.Estado = nuevoEstado;
-            await _context.SaveChangesAsync();
+            // Solo si cambia el estado, se actualiza y se envía correo
+            if (inscripcion.Estado != nuevoEstado)
+            {
+                inscripcion.Estado = nuevoEstado;
+                await _context.SaveChangesAsync();
 
-            // TODO: Enviar correo electrónico al usuario inscripto notificando el cambio de estado
+                // Enviar correo automático
+                await _emailService.EnviarCorreoCambioEstado(inscripcion.Correo, nuevoEstado);
+            }
 
             return Ok(inscripcion);
         }
