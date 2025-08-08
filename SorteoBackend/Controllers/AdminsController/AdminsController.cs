@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using SorteoBackend.Data;
+using SorteoBackend.Models;
+using SorteoBackend.Service;
 using SorteoBackend.Models.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
+
+
 
 namespace SorteoBackend.Controllers
 {
@@ -11,49 +11,100 @@ namespace SorteoBackend.Controllers
     [Route("api/[controller]")]
     public class AdminsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAdminService _adminService;
 
-        public AdminsController(ApplicationDbContext context)
+        public AdminsController(IAdminService adminService)
         {
-            _context = context;
+            _adminService = adminService;
         }
 
-        // POST: api/Admins/Login
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Admin admin)
+        // POST: api/Admins
+        [HttpPost]
+        public async Task<IActionResult> CreateAdmin([FromBody] Admin admin)
         {
-            string hashedPassword = ComputeSha256Hash(admin.PasswordHash);
-
-            var existingAdmin = await _context.Admins
-                .FirstOrDefaultAsync(a => a.Username == admin.Username && a.PasswordHash == hashedPassword);
-
-            if (existingAdmin == null)
-                return Unauthorized("Credenciales inválidas");
-
-            return Ok("Login exitoso");
-        }
-
-        // Utilidad para hash SHA256
-        private static string ComputeSha256Hash(string rawData)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
+            if (admin == null)
             {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
-                    builder.Append(b.ToString("x2"));
-                return builder.ToString();
+                return BadRequest("Datos del administrador inválidos.");
+            }
+
+            try
+            {
+                var createdAdmin = await _adminService.CreateAdminAsync(admin);
+                return CreatedAtAction(nameof(GetAdminById), new { id = createdAdmin.Id }, createdAdmin);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al crear el administrador: {ex.Message}");
             }
         }
 
-        // POST: api/Admins/Register (opcional para registrar un admin)
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] Admin admin)
+        // GET: api/Admins/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAdminById(int id)
         {
-            admin.PasswordHash = ComputeSha256Hash(admin.PasswordHash);
-            _context.Admins.Add(admin);
-            await _context.SaveChangesAsync();
-            return Ok("Administrador registrado");
+            var admin = await _adminService.GetAdminByIdAsync(id);
+
+            if (admin == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(admin);
+        }
+
+        // GET: api/Admins
+        [HttpGet]
+        public async Task<IActionResult> GetAllAdmins()
+        {
+            var admins = await _adminService.GetAllAdminsAsync();
+            return Ok(admins);
+        }
+
+        // PUT: api/Admins/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAdmin(int id, [FromBody] Admin admin)
+        {
+            if (id != admin.Id)
+            {
+                return BadRequest("El ID del administrador no coincide.");
+            }
+
+            try
+            {
+                var updatedAdmin = await _adminService.UpdateAdminAsync(id, admin);
+
+                if (updatedAdmin == null)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al actualizar el administrador: {ex.Message}");
+            }
+        }
+
+        // DELETE: api/Admins/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAdmin(int id)
+        {
+            try
+            {
+                var deleted = await _adminService.DeleteAdminAsync(id);
+
+                if (!deleted)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al eliminar el administrador: {ex.Message}");
+            }
         }
     }
 }

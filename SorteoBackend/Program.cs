@@ -1,18 +1,28 @@
-using SorteoBackend.Data;
 using Microsoft.EntityFrameworkCore;
-
+using SorteoBackend.Data;
+using SorteoBackend.Repository;
+using SorteoBackend.Service;
+using SorteoBackend.Services;
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar servicios al contenedor
+// Configurar servicios
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer(); // 👈 Swagger
-builder.Services.AddSwaggerGen();           // 👈 Swagger
+builder.Services.AddEndpointsApiExplorer(); // Swagger
+builder.Services.AddSwaggerGen();           // Swagger
 
-// Configurar la conexión a la base de datos
+// Configurar conexión a base de datos
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Permitir CORS (para que el frontend pueda hacer peticiones)
+// Registrar repositorios y servicios
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IInscripcionRepository, InscripcionRepository>();
+builder.Services.AddScoped<IInscripcionService, InscripcionService>();
+builder.Services.AddScoped<AuthService>();
+
+
+// Configurar CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -25,14 +35,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 👇 Swagger solo en desarrollo
+// Configurar middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Configurar el pipeline HTTP
+app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
 app.UseAuthorization();

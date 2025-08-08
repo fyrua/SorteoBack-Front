@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\dev\\SorteoSYC\\SorteoBackend\\SorteoBackend.csproj": {}
+    "C:\\dev\\SorteoBack-Front\\SorteoBackend\\SorteoBackend.csproj": {}
   },
   "projects": {
-    "C:\\dev\\SorteoSYC\\SorteoBackend\\SorteoBackend.csproj": {
+    "C:\\dev\\SorteoBack-Front\\SorteoBackend\\SorteoBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\dev\\SorteoSYC\\SorteoBackend\\SorteoBackend.csproj",
+        "projectUniqueName": "C:\\dev\\SorteoBack-Front\\SorteoBackend\\SorteoBackend.csproj",
         "projectName": "SorteoBackend",
-        "projectPath": "C:\\dev\\SorteoSYC\\SorteoBackend\\SorteoBackend.csproj",
+        "projectPath": "C:\\dev\\SorteoBack-Front\\SorteoBackend\\SorteoBackend.csproj",
         "packagesPath": "C:\\Users\\fabian rua\\.nuget\\packages\\",
-        "outputPath": "C:\\dev\\SorteoSYC\\SorteoBackend\\obj\\",
+        "outputPath": "C:\\dev\\SorteoBack-Front\\SorteoBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\fabian rua\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -44,6 +44,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[9.0.8, )"

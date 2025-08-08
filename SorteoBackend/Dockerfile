@@ -1,29 +1,32 @@
-# Consulte https://aka.ms/customizecontainer para aprender a personalizar su contenedor de depuración y cómo Visual Studio usa este Dockerfile para compilar sus imágenes para una depuración más rápida.
-
-# Esta fase se usa cuando se ejecuta desde VS en modo rápido (valor predeterminado para la configuración de depuración)
+# Usar la imagen oficial de .NET 8
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-# Esta fase se usa para compilar el proyecto de servicio
+# Usar la imagen de SDK para construir
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copiar archivos de proyecto
 COPY ["SorteoBackend.csproj", "."]
-RUN dotnet restore "./SorteoBackend.csproj"
+COPY ["SorteoBackend.csproj.user", "."]
+COPY ["SorteoBackend.sln", "."]
+
+# Restaurar dependencias
+RUN dotnet restore "SorteoBackend.csproj"
+
+# Copiar todo el código fuente
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./SorteoBackend.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.
+# Construir la aplicación
+RUN dotnet build "SorteoBackend.csproj" -c Release -o /app/build
+
+# Publicar la aplicación
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./SorteoBackend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "SorteoBackend.csproj" -c Release -o /app/publish
 
-# Esta fase se usa en producción o cuando se ejecuta desde VS en modo normal (valor predeterminado cuando no se usa la configuración de depuración)
+# Imagen final
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

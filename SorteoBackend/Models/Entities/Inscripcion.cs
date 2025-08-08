@@ -19,6 +19,7 @@ public class Inscripcion
 
     public string Telefono { get; set; } = string.Empty;
 
+    public string TipoDocumento { get; set; } = string.Empty;
     public string NumeroDocumento { get; set; } = string.Empty;
 
     public string DocumentoPath { get; set; } = string.Empty;
