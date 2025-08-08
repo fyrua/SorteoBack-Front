@@ -14,10 +14,12 @@ public class AdminService : IAdminService
 
     public async Task<Admin> CreateAdminAsync(Admin admin)
     {
-        _context.Admins.Add(admin);
-        await _context.SaveChangesAsync();
-        return admin;
+    admin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(admin.PasswordHash); // Hashear antes de guardar
+    _context.Admins.Add(admin);
+    await _context.SaveChangesAsync();
+    return admin;
     }
+
 
     public async Task<Admin?> GetAdminByIdAsync(int id)
     {
